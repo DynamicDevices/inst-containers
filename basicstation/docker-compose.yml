@@ -1,0 +1,40 @@
+networks:
+  mynetwork:
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
+
+services:
+
+  # ------------------------------------------------------------------------------------
+  # LoRa Basics™ Station Packet Forwarder
+  # ------------------------------------------------------------------------------------
+  basicstation:
+    image: ghcr.io/dynamicdevices/basicstation:latest
+    container_name: basicstation
+    restart: always
+    privileged: true
+    network_mode: host
+    volumes:
+      - ./config:/app/config
+    environment:
+        USE_CUPS: "1"
+        CUPS_KEY: "NNSXS.VBO7V5SU27POGXUK4OYCGGW6OLW6UAWO6CSGIRY.RIJLEPZLXXUGSRFJGETEPRHSZ6PE7LOSUY2AIYKMRL7XWXJBRBWQ"
+        DEVICE: "/dev/ttyACM1"
+        GATEWAY_EUI_SOURCE: "chip"
+        INTERFACE: "USB"
+        MODEL: "SX1303"
+        TC_KEY: "NNSXS.ZFIYRARN7MWCCP3EMCOLY7UU3M5E7NJVJJLXBUA.H5HVOXKL6B7RIWQZFGWCMZRCPXGC76NLIA6VXIUT7TTMOSWIUCQA"
+        TC_TRUST: ""
+        TC_URL: "wss://localhost:8887"
+        TTN_REGION: "eu1"
+        TTN_STACK_VERSION: "3"
+        TTS_DOMAIN: ""
+        DISABLE_DUTY_CYCLE_CHECK: "1"
+        DISABLE_DWELL_TIME_LIMITS: "1"
+        TTS_FREQUENCY_PLAN_ID: "EU_863_870_TTN"
+        HAS_GPS: "1"
+        GPS_DEV: "/dev/ttyACM2"
+#    networks:
+#      mynetwork:
+#        ipv4_address: 172.20.0.13

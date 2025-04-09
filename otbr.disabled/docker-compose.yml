@@ -1,0 +1,46 @@
+version: '2'
+
+services:
+   otbr:
+     image: hub.foundries.io/${FACTORY}/otbr:latest
+     container_name: otbr
+     devices:
+# You need to set the correct USB device to use for the OpenThread RCP dongle here
+       - /dev/ttyACM0:/dev/ttyACM0
+     environment:
+# You need to set the correct USB device to use for the OpenThread RCP dongle here
+       - RADIO_URL="spinel+hdlc+uart:///dev/ttyACM0"
+# You need to set the correct backbone interface for routing here e.g. wlan0 or eth0
+       - BACKBONE_INTERFACE="eth0"
+# Support for MQTT-SN in this container - TODO: We want to remove this!
+       - SENSORNET=udp6
+       - ENV_BROKER_NAME=mqtt.dynamicdevices.co.uk
+       - ENV_BROKER_PORT=1883
+       - ENV_BROKER_SECURE_PORT=8883
+       - ENV_GATEWAY_PORT=10000
+       - ENV_GATEWAY_IPV6_PORT=10000
+     sysctls:
+       net.ipv6.conf.all.disable_ipv6: 0
+       net.ipv4.conf.all.forwarding: 1
+       net.ipv6.conf.all.forwarding: 1
+     ports:
+       - 80:80
+       - 8081:8081
+     privileged: true
+     labels:
+       io.balena.features.kernel-modules: '1'
+     networks:
+       customnet:
+         ipv4_address: 172.28.0.3
+         ipv6_address: 2001:3984:3989::21
+
+networks:
+  customnet:
+    enable_ipv6: true
+    ipam:
+      driver: default
+      config:
+      - subnet: 172.28.0.0/14
+        gateway: 172.28.0.1
+      - subnet: 2001:3984:3989::/64
+        gateway: 2001:3984:3989::1
